@@ -1,0 +1,195 @@
+openapi: 3.0.3
+info:
+  title: PWA Socket.io Swagger
+  description: |-
+    Все EMIT методы описаны в сваггере как POST запросы, наименования ON методов, возвращаемых EMIT запросом указаны в их описании. 
+
+    Необходимые на клиенте ON методы описаны в PUT
+  version: 1.0.11
+servers:
+  - url: http://194.187.122.139:5000
+tags:
+  - name: ADMIN
+    description: Запросы по взаимодействию с ведущим
+  - name: USER
+    description: Запросы по взаимодействию с пользователями
+paths:
+  /ADMIN_LOGIN:
+    post:
+      tags:
+        - ADMIN
+      summary: Авторизация под учеткой ведущего
+      description: Респонс приходит в ON запрос "ADMIN_LOGIN"
+      operationId: AdminLoginRequest
+      requestBody:
+        description: Необходимые авторизационные данные
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLoginData'
+        required: true
+      responses:
+        '200':
+          description: Запрос выполнен успешно
+          content:
+            application/json:
+             schema:
+                type: object
+    put:
+      tags:
+        - ADMIN
+      summary: Ответ на авторизацию под учеткой ведущего
+      operationId: AdminLoginResponse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Запрос выполнен успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminLoginResponse'
+        '400':
+          description: Любая ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+  /ADMIN_LOGOUT:
+    post:
+      tags:
+        - ADMIN
+      summary: Выход из системы под учеткой ведущего
+      description: Респонс приходит в ON запрос "ADMIN_LOGOUT"
+      operationId: AdminLogoutRequest
+      requestBody:
+        description: Необходимые данные для выхода
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hash:
+                  type: string
+                  example: 'A0!%4а@qwEW'
+        required: true
+      responses:
+        '200':
+          description: Запрос выполнен успешно
+          content:
+            application/json:
+             schema:
+                type: object
+    put:
+      tags:
+        - ADMIN
+      summary: Ответ на выход из системы под учеткой ведущего
+      operationId: AdminLogoutResponse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Запрос выполнен успешно
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Любая ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+        phone:
+          type: string
+          example: '12345'
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+      xml:
+        name: user
+    AdminLoginData:
+      required:
+        - username
+        - password
+      type: object
+      properties:
+        username:
+          type: string
+          example: admin
+        password:
+          type: string
+          example: '000000'
+    AdminLoginResponse:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            username:
+              type: string
+              example: admin
+            hash:
+              type: string
+              example: 'A0!%4а@qwEW'
+            lang:
+              type: string
+              example: ru
+    BaseError:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              example: 'password'
+            message:
+              type: string
+              example: 'Неправильный пароль'
+            description:
+              type: string
+              example: 'Пожалуйста, проверьте введенные данные.'
+  requestBodies:
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
