@@ -2,6 +2,7 @@ export type LoginUserData = {
     phone?: string
     birthdate?: string
     username: string
+    hash?: string
 }
 
 export type User = { // Пользователь системы

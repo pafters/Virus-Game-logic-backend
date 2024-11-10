@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import UserManager from './modules/users/UserManager';
 import GameManager from './modules/games/GameManager';
+import AdminManager from 'modules/users/AdminManager';
 
 const app = express();
 const server = http.createServer(app);
@@ -15,7 +16,8 @@ const io = new Server(server, {
 });
 
 const userManager = new UserManager(io);
-const gameManager = new GameManager(io)
+const gameManager = new GameManager(io);
+const adminManager = new AdminManager(io);
 
 app.use(cors());
 app.use(express.json());
@@ -29,7 +31,10 @@ io.on('connection', socket => {
 
     socket.on('disconnect', () => {
         console.log('disconnect', socket.id)
-        userManager.socketDisconnectLogout(socket);
+        const logoutSucces = userManager.socketDisconnectLogout(socket);
+        if(!logoutSucces){
+            adminManager.socketDisconnectLogout(socket);
+        }
     });
 });
 
